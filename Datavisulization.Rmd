@@ -1,0 +1,139 @@
+---
+title: "Data visulization"
+author: '1718428'
+date: "2023-01-13"
+output: html_document
+
+---
+
+```{r}
+#Library
+library(ggplot2)
+library(tidyverse)
+```
+
+
+```{r}
+data <- read.csv("cleandata.csv")
+colnames(data)
+```
+
+```{r}
+ plotdata <- data %>%
+    count( RIDRETH1) %>%
+    arrange(desc( RIDRETH1)) %>%
+    mutate(prop = round(n * 100 / sum(n), 1),
+           lab.ypos = cumsum(prop) - 0.5  *prop)
+  
+  ggplot(plotdata, 
+         aes(x = "", 
+             y = prop, 
+             fill =  RIDRETH1)) +
+    geom_bar(width = 1, 
+             stat = "identity", 
+             color = "black",
+             alpha = 2/5) +
+    coord_polar("y", 
+                start = 0, 
+                direction = -1) +
+    theme_void() +
+    labs(title = "Participants by Race")
+  
+  plotdata <- data %>%
+    count( DMDBORN) %>%
+    arrange(desc( DMDBORN)) %>%
+    mutate(prop = round(n * 100 / sum(n), 1),
+           lab.ypos = cumsum(prop) - 0.5  *prop)
+  
+  ggplot(plotdata, 
+         aes(x = "", 
+             y = prop, 
+             fill =  DMDBORN)) +
+    geom_bar(width = 1, 
+             stat = "identity", 
+             color = "black",
+             alpha = 2/5) +
+    coord_polar("y", 
+                start = 0, 
+                direction = -1) +
+    theme_void() +
+    labs(title = "Participants by Born Place")
+  
+
+  plotdata <- data %>%
+    count( DMDMARTL) %>%
+    arrange(desc( DMDMARTL)) %>%
+    mutate(prop = round(n * 100 / sum(n), 1),
+           lab.ypos = cumsum(prop) - 0.5  *prop)
+  ggplot(plotdata, 
+         aes(x = "", 
+             y = prop, 
+             fill = DMDMARTL)) +
+    geom_bar(width = 1, 
+             stat = "identity", 
+             color = "black",
+             alpha = 2/5) +
+    coord_polar("y", 
+                start = 0, 
+                direction = -1) +
+    theme_void() +
+    labs(title = "Participants by Martial status")
+  
+  
+```
+
+```{r}
+#Race
+ggplot(data, mapping = aes(x = RIDAGEYR , fill = RIDRETH1))+
+  geom_bar(alpha = 2/5, position = "identity")
+#Born place
+ggplot(data,mapping = aes(x = RIDAGEYR, fill = DMDBORN )) + 
+   geom_bar(alpha = 2/5, position = "identity")
+#Martial status
+ggplot(data,mapping = aes(x = RIDAGEYR, fill = DMDMARTL )) + 
+   geom_bar(alpha = 2/5, position = "identity")
+
+```
+```{r}
+#Avoid the gridding by setting the position adjustment to “jitter”. position = "jitter" adds a small amount of random noise to each point. This spreads the points out because no two points are likely to receive the same amount of random noise.
+ggplot(data, aes(x=RIDAGEYR, y = DMDFMSIZ)) +
+  geom_line(color="grey") +
+  geom_point(color="#99CCFF", position = "jitter", size = 0.5) +
+  facet_wrap(~ DMDMARTL) + 
+  theme_minimal(base_size = 9) +
+  theme(axis.text.x = element_text(angle = 45, 
+                                   hjust = 1)) +
+  labs(title = "Changes in Family members",
+       x = "Age",
+       y = "Total number of family members") 
+```
+
+```{r}
+g <- ggplot(data, 
+       aes(x = RIDAGEYR, 
+           y = DMDEDUC3,
+           color = RIDRETH1,
+           alpha = 2/5,
+           shape = RIAGENDR)) +
+  geom_point(size = .5 )+
+  geom_smooth(method = "lm",
+              formula = y ~ poly(x,2),
+              se = FALSE, 
+              size = .5,
+              linetype = "dashed")
+
+  labs(title = "Education level by gender, rece, and age growth")
+g + xlim(c(14, 85)) + ylim(c(0, 22))
+```
+```{r}
+ggplot(data, 
+       aes(x = INDFMINC, #Family income
+           color = RIDRETH1))  + 
+  geom_bar(alpha = 2/5, position = "dodge")+
+  facet_grid(DMDCITZN ~ DMDMARTL) +
+  labs(title = "Family Income histograms by Gender and Marriage",
+       x = "Family Income")
+```
+
+
+

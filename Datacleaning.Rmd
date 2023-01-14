@@ -1,0 +1,104 @@
+---
+title: "Data Cleaning"
+author: '1718428'
+date: "2023-01-13"
+output: html_document
+---
+
+```{r}
+#load library
+library(dplyr)
+library(tidyverse)
+```
+
+```{r}
+#read data
+rowdat<-read.csv("DEMO_D.csv")
+```
+
+```{r}
+#Separate adult(over 16) data
+adultdat = rowdat[,c('SEQN','RIAGENDR','RIDAGEYR','RIDRETH1','DMDBORN','DMDCITZN','DMDEDUC2','DMDMARTL','DMDFMSIZ','INDFMINC')]
+#rearrange the education level by each column + 15
+adultdat$DMDEDUC3 = adultdat$DMDEDUC2+15
+data1 = adultdat[complete.cases(adultdat), ] 
+newdata = data1[,c('SEQN','RIAGENDR','RIDAGEYR','RIDRETH1','DMDBORN','DMDCITZN','DMDEDUC3','DMDMARTL','DMDFMSIZ','INDFMINC')]
+data1
+```
+
+
+```{r}
+#Separate teen(6-16) data
+teendat = rowdat[,c('SEQN','RIAGENDR','RIDAGEYR','RIDRETH1','DMDBORN','DMDCITZN','DMDEDUC3','DMDMARTL','DMDFMSIZ','INDFMINC')]
+data2 = teendat[complete.cases(teendat), ] 
+data2
+```
+```{r}
+#Combine two data back together
+data3 = rbind(newdata,data2)
+#Category 
+
+#Gender
+for ( x in 1:6623) {
+  if ( data3$RIAGENDR[x] == 1)  data3$RIAGENDR[x] = "male"
+  if ( data3$RIAGENDR[x] == 2)  data3$RIAGENDR[x] = "female"
+}
+
+#Race
+for ( x in 1:6623) {
+  if ( data3$RIDRETH1[x] == 1)  data3$RIDRETH1[x] = "Mexican American"
+  if ( data3$RIDRETH1[x] == 2)  data3$RIDRETH1[x] = "Other Hispanic"
+  if ( data3$RIDRETH1[x] == 3)  data3$RIDRETH1[x] = "Non-Hispanic White"
+  if ( data3$RIDRETH1[x] == 4)  data3$RIDRETH1[x] = "Non-Hispanic Black"
+  if ( data3$RIDRETH1[x] == 5)  data3$RIDRETH1[x] = "Other Race - Including Multi-Racial"
+}
+#Citizenship
+for ( x in 1:6623) {
+  if ( data3$DMDCITZN [x] == 1)  data3$DMDCITZN[x] = "A citizen of the US"
+  if ( data3$DMDCITZN [x] == 2)  data3$DMDCITZN[x] = "Not a citizen of the US"
+}
+
+# Born place
+for ( x in 1:6623) {
+  if ( data3$DMDBORN [x] == 1)  data3$DMDBORN[x] = "The US"
+  if ( data3$DMDBORN [x] == 2)  data3$DMDBORN[x] = "Mexico"
+  if ( data3$DMDBORN [x] == 3)  data3$DMDBORN[x] = "Elsewhere"
+}
+
+#Marital Status
+for ( x in 1:6623) {
+  if ( data3$DMDMARTL [x] == 1)  data3$DMDMARTL [x] = "Married"
+  if ( data3$DMDMARTL [x] == 2)  data3$DMDMARTL [x] = "Widowed"
+  if ( data3$DMDMARTL [x] == 3)  data3$DMDMARTL [x] = "Divorced"
+  if ( data3$DMDMARTL [x] == 4)  data3$DMDMARTL [x] = "Separeted"
+  if ( data3$DMDMARTL [x] == 5)  data3$DMDMARTL [x] = "Never married"
+  if ( data3$DMDMARTL [x] == 6)  data3$DMDMARTL [x] = "Living with partner"
+}
+
+```
+
+```{r}
+#Clean the "refuse' and "unknown"
+data4 <- subset(data3, DMDBORN!='7' ) 
+data5 <- subset(data4, DMDCITZN!='7' )
+data6 <- subset(data5, DMDCITZN!='9' )
+data7 <- subset(data6, DMDEDUC3!='77' )
+data8 <- subset(data7, DMDEDUC3!='99' )
+data9 <- subset(data8, DMDMARTL!='77' )
+data10 <- subset(data9, DMDMARTL!='99' )
+data11 <- subset(data10, INDFMINC!='77' )
+data12 <- subset(data11, INDFMINC!='99' )
+data13 <- subset(data12, DMDEDUC3!='22' )
+data14 <- subset(data13, DMDEDUC3!='24' )
+data15 <- subset(data14, DMDEDUC3!='66' )
+data16 <- subset(data15, INDFMINC!='12' )
+data17 <- subset(data16, INDFMINC!='13' )
+data17
+```
+
+
+```{r}
+#Write new clean data file
+write.csv(data17,"cleandata.csv")
+```
+
