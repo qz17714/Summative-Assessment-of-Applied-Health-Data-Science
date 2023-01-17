@@ -1,0 +1,21 @@
+name: snakemake_pipe
+channels:
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.9
+  - snakemake=7.18
+  - r=4.1
+  - r-tidyverse
+  - graphviz
+  - r-dplyr
+  - r-tidyverse
+  - r-ggplot2
+  - r-ggpubr
+  - r-ggrepel
+  - r-shiny
+  - r-shinythemes
+  - r-datamods
+  - r-reactable
+  
